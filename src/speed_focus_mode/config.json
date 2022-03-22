@@ -1,5 +1,5 @@
 {
-    "enableMoreTimeButton": true,
-    "stopWhenTypingAnswer": true,
+    "enableMoreTimeButton": false,
+    "stopWhenTypingAnswer": false,
     "hotkeyMoreTime": "p"
 }

@@ -42,21 +42,25 @@ function spdfReset() {
   spdfCurrentAction = null;
 }
 
-function spdfSetCurrentTimer(timeout, action, _ms) {
-  spdfCurrentAction = action;
-  spdfCurrentTimeout = timeout;
+function spdfClearCurrentTimeout() {
+  if (spdfCurrentTimeout != null) {
+    clearTimeout(spdfCurrentTimeout);
+  }
+  if (spdfAutoAlertTimeout != null) {
+    clearTimeout(spdfAutoAlertTimeout);
+  }
 }
 
 function spdfSetAutoAlert(ms) {
   clearTimeout(spdfAutoAlertTimeout);
-  spdfAutoActionTimeout = setTimeout(pycmd, ms, "spdf:alert");
+  spdfAutoAlertTimeout = setTimeout(pycmd, ms, "spdf:alert");
 }
 
 function spdfSetAutoAnswer(ms) {
   spdfReset();
   clearTimeout(spdfAutoAnswerTimeout);
-  spdfAutoActionTimeout = setTimeout(pycmd, ms, "ans");
-  spdfSetCurrentTimer(spdfAutoAnswerTimeout, ms, "Reveal");
+  spdfAutoAnswerTimeout = setTimeout(pycmd, ms, "ans");
+  spdfSetCurrentTimer(spdfAutoAnswerTimeout, "Reveal", ms);
 }
 function spdfSetAutoAction(ms, action) {
   spdfReset();

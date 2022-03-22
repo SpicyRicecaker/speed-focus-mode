@@ -221,8 +221,8 @@ def webview_message_handler(reviewer: Reviewer, message: str):
         if local_conf["stopWhenTypingAnswer"]:
             suspend_timers(reviewer)
     elif action == "alert":
-        av_player.clear_queue_and_maybe_interrupt()
-        av_player.play_file(ALERT_PATH)
+        # av_player.clear_queue_and_maybe_interrupt()
+        # av_player.play_file(ALERT_PATH)
         timeout = deck_config.get("autoAlert", 0)
         tooltip(
             "Wake up! You have been looking at <br>"
