@@ -62,6 +62,7 @@ function spdfSetAutoAnswer(ms) {
   spdfAutoAnswerTimeout = setTimeout(pycmd, ms, "ans");
   spdfSetCurrentTimer(spdfAutoAnswerTimeout, "Reveal", ms);
 }
+
 function spdfSetAutoAction(ms, action) {
   spdfReset();
   clearTimeout(spdfAutoActionTimeout);
