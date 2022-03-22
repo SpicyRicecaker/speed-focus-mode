@@ -37,38 +37,56 @@ var spdfAutoAnswerTimeout = 0;
 var spdfAutoActionTimeout = 0;
 var spdfCurrentTimeout = null;
 var spdfCurrentAction = null;
-var spdfCurrentInterval = null;
+// var spdfCurrentInterval = null;
+var spdfCurrentTimer = null;
+var running = false;
 
 function spdfReset() {
-  clearInterval(spdfCurrentInterval);
+  clearTimeout(spdfCurrentTimer);
   spdfCurrentTimeout = null;
   spdfCurrentAction = null;
 }
 
-function spdfUpdateTime() {
-  var timeNode = document.getElementById("spdfTime");
-  if (spdfTimeLeft === 0) {
-    timeNode.textContent = "";
+// runs `tick()` and `render()` for the countdown timer
+function spdfUpdateTime(past) {
+  if (!running) {
     return;
   }
-  var time = Math.max(spdfTimeLeft, 0);
-  var m = Math.floor(time / 60);
-  var s = time % 60;
-  if (s < 10) {
-    s = "0" + s;
+  const date = new Date();
+  spdfTimeLeft = timeLeft - (date.getTime() - past.getTime());
+  spdfDisplayTime();
+
+  if (timeLeft < 0) {
+    // no need to update timer if time is already 0
+    timeNode.textContent = "";
+    running = false;
+  } else {
+    timerId = setTimeout(spdfUpdateTime, 1000, date);
   }
-  timeNode.textContent = spdfCurrentAction + " " + m + ":" + s;
-  spdfTimeLeft = time - 1;
+}
+
+function spdfDisplayTime() {
+  // the timer on the bottom right of the screen
+  var time = Math.round(spdfTimeLeft / 1000);
+  // minutes
+  var m = Math.floor(time / 60);
+  // seconds
+  var s = time % 60;
+  document.getElementById("spdfTime").textContent = `${spdfCurrentAction} ${m}:${s < 10 ? "0" : ""}${s}`;
 }
 
 function spdfSetCurrentTimer(timeout, action, ms) {
+  // assign action (i.e. 'good' or 'next', etc.)
   spdfCurrentAction = action;
+  // the amount of seconds at which point to ignore the answer
   spdfCurrentTimeout = timeout;
-  spdfTimeLeft = Math.round(ms / 1000);
-  spdfUpdateTime();
-  spdfCurrentInterval = setInterval(function () {
-    spdfUpdateTime();
-  }, 1000);
+
+  // update time left
+  spdfTimeLeft = ms;
+  // rewrite timer
+  running = true;
+  // spdfCurrentTimer = spdfUpdateTime(new Date());
+  document.getElementById("spdfTime").textContent = `${spdfCurrentAction} ${m}:${s < 10 ? "0" : ""}${s}`;
 }
 
 function spdfClearCurrentTimeout() {
@@ -78,40 +96,36 @@ function spdfClearCurrentTimeout() {
   if (spdfAutoAlertTimeout != null) {
     clearTimeout(spdfAutoAlertTimeout);
   }
-  clearInterval(spdfCurrentInterval);
-  var timeNode = document.getElementById("spdfTime");
-  timeNode.textContent = "Stopped.";
+  clearTimeout(spdfCurrentTimer);
+
+  document.getElementById("spdfTime").textContent = "Stopped.";
   $("#ansbut").focus();
   $("#defease").focus();
 }
 
 function spdfSetAutoAlert(ms) {
   clearTimeout(spdfAutoAlertTimeout);
-  spdfAutoAlertTimeout = setTimeout(function () {
-    pycmd("spdf:alert");
-  }, ms);
+  spdfAutoAlertTimeout = setTimeout(pycmd, ms, "spdf:alert");
 }
 
 function spdfSetAutoAnswer(ms) {
   spdfReset();
   clearTimeout(spdfAutoAnswerTimeout);
-  spdfAutoAnswerTimeout = setTimeout(function () {
-    pycmd("ans");
-  }, ms);
+  spdfAutoAlertTimeout = setTimeout(pycmd, ms, "ans");
   spdfSetCurrentTimer(spdfAutoAnswerTimeout, "Reveal", ms);
 }
+
 function spdfSetAutoAction(ms, action) {
   spdfReset();
   clearTimeout(spdfAutoActionTimeout);
-  spdfAutoActionTimeout = setTimeout(function () {
-    pycmd("spdf:action");
-  }, ms);
+  spdfAutoAlertTimeout = setTimeout(pycmd, ms, "spdf:action");
   spdfSetCurrentTimer(spdfAutoActionTimeout, action, ms);
 }
 
 function spdfHide() {
   document.getElementById("spdfControls").style.display = "none";
 }
+
 function spdfShow() {
   document.getElementById("spdfControls").style.display = "";
 }
@@ -124,5 +138,6 @@ const spdfButtonHTML = `
 </td>
 `;
 
-
-document.getElementById("middle").insertAdjacentHTML("afterend", spdfButtonHTML);
+document
+  .getElementById("middle")
+  .insertAdjacentHTML("afterend", spdfButtonHTML);
