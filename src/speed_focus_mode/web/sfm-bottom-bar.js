@@ -31,7 +31,6 @@
 # Any modifications to this file must keep this entire header intact.
 */
 
-
 var spdfAutoAlertTimeout = 0;
 var spdfAutoAnswerTimeout = 0;
 var spdfAutoActionTimeout = 0;
@@ -116,13 +115,12 @@ function spdfShow() {
   document.getElementById("spdfControls").style.display = "";
 }
 
-const spdfButtonHTML = `
+const spdfTimeDisplay = `
 <td id="spdfControls" width="50" align="center" valign="top" class="stat">
-<span id="spdfTime" class="stattxt"></span><br>
-<button title="Shortcut key: ${window.spdfHotkeyMoreTime}"
-    onclick="spdfClearCurrentTimeout();">More time!</button>
+<span id="spdfTime" class="stattxt"></span>
 </td>
 `;
 
-
-document.getElementById("middle").insertAdjacentHTML("afterend", spdfButtonHTML);
+document
+  .getElementById("middle")
+  .insertAdjacentHTML("afterend", spdfTimeDisplay);
