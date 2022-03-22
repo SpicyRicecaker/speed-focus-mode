@@ -36,91 +36,31 @@ var spdfAutoAnswerTimeout = 0;
 var spdfAutoActionTimeout = 0;
 var spdfCurrentTimeout = null;
 var spdfCurrentAction = null;
-var spdfCurrentInterval = null;
 
 function spdfReset() {
-  clearInterval(spdfCurrentInterval);
   spdfCurrentTimeout = null;
   spdfCurrentAction = null;
 }
 
-function spdfUpdateTime() {
-  var timeNode = document.getElementById("spdfTime");
-  if (spdfTimeLeft === 0) {
-    timeNode.textContent = "";
-    return;
-  }
-  var time = Math.max(spdfTimeLeft, 0);
-  var m = Math.floor(time / 60);
-  var s = time % 60;
-  if (s < 10) {
-    s = "0" + s;
-  }
-  timeNode.textContent = spdfCurrentAction + " " + m + ":" + s;
-  spdfTimeLeft = time - 1;
-}
-
-function spdfSetCurrentTimer(timeout, action, ms) {
+function spdfSetCurrentTimer(timeout, action, _ms) {
   spdfCurrentAction = action;
   spdfCurrentTimeout = timeout;
-  spdfTimeLeft = Math.round(ms / 1000);
-  spdfUpdateTime();
-  spdfCurrentInterval = setInterval(function () {
-    spdfUpdateTime();
-  }, 1000);
-}
-
-function spdfClearCurrentTimeout() {
-  if (spdfCurrentTimeout != null) {
-    clearTimeout(spdfCurrentTimeout);
-  }
-  if (spdfAutoAlertTimeout != null) {
-    clearTimeout(spdfAutoAlertTimeout);
-  }
-  clearInterval(spdfCurrentInterval);
-  var timeNode = document.getElementById("spdfTime");
-  timeNode.textContent = "Stopped.";
-  $("#ansbut").focus();
-  $("#defease").focus();
 }
 
 function spdfSetAutoAlert(ms) {
   clearTimeout(spdfAutoAlertTimeout);
-  spdfAutoAlertTimeout = setTimeout(function () {
-    pycmd("spdf:alert");
-  }, ms);
+  spdfAutoActionTimeout = setTimeout(pycmd, ms, "spdf:alert");
 }
 
 function spdfSetAutoAnswer(ms) {
   spdfReset();
   clearTimeout(spdfAutoAnswerTimeout);
-  spdfAutoAnswerTimeout = setTimeout(function () {
-    pycmd("ans");
-  }, ms);
-  spdfSetCurrentTimer(spdfAutoAnswerTimeout, "Reveal", ms);
+  spdfAutoActionTimeout = setTimeout(pycmd, ms, "ans");
+  spdfSetCurrentTimer(spdfAutoAnswerTimeout, ms, "Reveal");
 }
 function spdfSetAutoAction(ms, action) {
   spdfReset();
   clearTimeout(spdfAutoActionTimeout);
-  spdfAutoActionTimeout = setTimeout(function () {
-    pycmd("spdf:action");
-  }, ms);
+  spdfAutoActionTimeout = setTimeout(pycmd, ms, "spdf:action");
   spdfSetCurrentTimer(spdfAutoActionTimeout, action, ms);
 }
-
-function spdfHide() {
-  document.getElementById("spdfControls").style.display = "none";
-}
-function spdfShow() {
-  document.getElementById("spdfControls").style.display = "";
-}
-
-const spdfTimeDisplay = `
-<td id="spdfControls" width="50" align="center" valign="top" class="stat">
-<span id="spdfTime" class="stattxt"></span>
-</td>
-`;
-
-document
-  .getElementById("middle")
-  .insertAdjacentHTML("afterend", spdfTimeDisplay);

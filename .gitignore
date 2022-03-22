@@ -47,3 +47,5 @@ src/*/meta.json
 src/*/manifest.json
 src/*/user_files/*
 !src/*/user_files/README.txt
+
+.DS_Store
